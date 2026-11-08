@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' file: data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+<title>Starr</title>
+<link rel="stylesheet" href="pet.css">
+</head>
+<body data-state="sleeping">
+<div id="stage">
+  <div id="bubble"><div id="bubble-text"></div></div>
+  <div id="confetti"></div>
+  <div id="pet">
+    <img id="skin" class="hit" alt="" draggable="false">
+    <svg id="svg" viewBox="0 0 170 180" width="170" height="180" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="clay" cx="38%" cy="30%" r="80%">
+          <stop offset="0" stop-color="#F3A27F"/>
+          <stop offset=".55" stop-color="#DE7A57"/>
+          <stop offset="1" stop-color="#B95A3C"/>
+        </radialGradient>
+        <radialGradient id="glowg">
+          <stop offset="0" style="stop-color: var(--bulb); stop-opacity: .9"/>
+          <stop offset="1" style="stop-color: var(--bulb); stop-opacity: 0"/>
+        </radialGradient>
+      </defs>
+
+      <ellipse id="shadow" cx="85" cy="171" rx="40" ry="6"/>
+
+      <!-- error cloud (outside the body so it doesn't shake) -->
+      <g class="fx fx-cloud">
+        <g class="cloud">
+          <ellipse cx="50" cy="36" rx="16" ry="10" fill="#8C8FA3"/>
+          <ellipse cx="62" cy="30" rx="13" ry="11" fill="#9A9DB0"/>
+          <ellipse cx="72" cy="37" rx="12" ry="9" fill="#8C8FA3"/>
+          <path class="bolt" d="M60,44 L54,56 L60,56 L55,68 L67,52 L61,52 L65,44 Z" fill="#FFD23F"/>
+        </g>
+      </g>
+
+      <g id="bodyg">
+        <!-- feet -->
+        <ellipse class="hit" cx="67" cy="163" rx="12" ry="7" fill="#A84E33"/>
+        <ellipse class="hit" cx="103" cy="163" rx="12" ry="7" fill="#A84E33"/>
+
+
+        <!-- antenna -->
+        <path class="hit" d="M85,72 C85,58 90,50 97,42" stroke="#A84E33" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <circle id="glow" cx="98" cy="39" r="15" fill="url(#glowg)"/>
+        <circle id="bulb" class="hit" cx="98" cy="39" r="7"/>
+
+        <!-- body -->
+        <path class="hit" d="M85,70 C118,70 134,96 134,124 C134,151 113,166 85,166 C57,166 36,151 36,124 C36,96 52,70 85,70 Z" fill="url(#clay)"/>
+        <ellipse cx="85" cy="141" rx="27" ry="18" fill="#FBE3D3" opacity=".45" pointer-events="none"/>
+        <ellipse cx="64" cy="90" rx="13" ry="7" fill="#fff" opacity=".28" transform="rotate(-25 64 90)" pointer-events="none"/>
+
+        <!-- arms -->
+        <ellipse id="arm-l" class="hit" cx="40" cy="122" rx="9" ry="14" fill="#C9653F"/>
+        <ellipse id="arm-r" class="hit" cx="130" cy="122" rx="9" ry="14" fill="#C9653F"/>
+
+        <g id="face" pointer-events="none">
+          <!-- cheeks -->
+          <ellipse class="cheek" cx="56" cy="129" rx="7.5" ry="4.2"/>
+          <ellipse class="cheek" cx="114" cy="129" rx="7.5" ry="4.2"/>
+
+          <!-- brows -->
+          <g class="brow brow-think" stroke="#5A2D20" stroke-width="2.4" stroke-linecap="round" fill="none">
+            <path d="M94,99 Q101,94 108,98"/>
+          </g>
+          <g class="brow brow-worry" stroke="#5A2D20" stroke-width="2.4" stroke-linecap="round" fill="none">
+            <path d="M60,103 L74,99"/><path d="M96,99 L110,103"/>
+          </g>
+
+          <!-- eyes -->
+          <g class="e e-normal">
+            <ellipse cx="69" cy="114" rx="6" ry="8" fill="#2B1B17"/>
+            <ellipse cx="101" cy="114" rx="6" ry="8" fill="#2B1B17"/>
+            <circle cx="71" cy="110.5" r="2.2" fill="#fff"/>
+            <circle cx="103" cy="110.5" r="2.2" fill="#fff"/>
+          </g>
+          <g class="e e-wide">
+            <ellipse cx="69" cy="113" rx="7.2" ry="9.6" fill="#2B1B17"/>
+            <ellipse cx="101" cy="113" rx="7.2" ry="9.6" fill="#2B1B17"/>
+            <circle cx="71.5" cy="109" r="2.9" fill="#fff"/>
+            <circle cx="103.5" cy="109" r="2.9" fill="#fff"/>
+            <circle cx="67" cy="117" r="1.3" fill="#fff"/>
+            <circle cx="99" cy="117" r="1.3" fill="#fff"/>
+          </g>
+          <g class="e e-focus">
+            <ellipse cx="69" cy="116" rx="6" ry="5.5" fill="#2B1B17"/>
+            <ellipse cx="101" cy="116" rx="6" ry="5.5" fill="#2B1B17"/>
+            <circle cx="71" cy="114.5" r="1.7" fill="#fff"/>
+            <circle cx="103" cy="114.5" r="1.7" fill="#fff"/>
+            <path d="M60,108 L77,111 M93,111 L110,108" stroke="#5A2D20" stroke-width="2.6" stroke-linecap="round"/>
+          </g>
+          <g class="e e-closed" stroke="#2B1B17" stroke-width="2.6" fill="none" stroke-linecap="round">
+            <path d="M62,115 Q69,120 76,115"/><path d="M94,115 Q101,120 108,115"/>
+          </g>
+          <g class="e e-happy" stroke="#2B1B17" stroke-width="3" fill="none" stroke-linecap="round">
+            <path d="M62,117 Q69,107 76,117"/><path d="M94,117 Q101,107 108,117"/>
+          </g>
+          <g class="e e-dizzy" stroke="#2B1B17" stroke-width="2.6" stroke-linecap="round">
+            <path d="M63,108 L75,120 M75,108 L63,120"/><path d="M95,108 L107,120 M107,108 L95,120"/>
+          </g>
+
+          <!-- mouths -->
+          <path class="m m-smile" d="M79,129 Q85,134 91,129" stroke="#5A2D20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <path class="m m-think" d="M80,131 Q86,131 91,128" stroke="#5A2D20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <path class="m m-flat" d="M80,131 Q85,129 90,131" stroke="#5A2D20" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+          <ellipse class="m m-o" cx="85" cy="131" rx="3.6" ry="4.6" fill="#7A2E22"/>
+          <circle class="m m-sleep" cx="85" cy="131" r="2.3" fill="#7A2E22"/>
+          <path class="m m-open" d="M76,127 Q85,141 94,127 Z" fill="#7A2E22"/>
+          <path class="m m-wavy" d="M75,132 q2.5,-3 5,0 t5,0 t5,0 t5,0" stroke="#5A2D20" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+        </g>
+
+        <!-- laptop (working) -->
+        <g class="fx fx-laptop">
+          <rect x="60" y="140" width="50" height="27" rx="4" fill="#D5DAE3" stroke="#9AA3B2" stroke-width="1.5"/>
+          <circle class="led" cx="85" cy="153" r="2.6" fill="#5BD1FF"/>
+          <path d="M54,167 L116,167 L120,172 L50,172 Z" fill="#9AA3B2"/>
+        </g>
+
+        <!-- sweat drop -->
+        <path class="fx fx-sweat" d="M126,88 C130,94 132,98 129,102 C126,105 122,102 123,98 C124,94 126,88 126,88 Z" fill="#8FD3FF"/>
+      </g>
+
+      <!-- floating fx -->
+      <g class="fx fx-zzz" font-family="-apple-system, Helvetica, sans-serif" font-weight="800" fill="#8F86B8">
+        <text class="z z1" x="118" y="70" font-size="12">z</text>
+        <text class="z z2" x="128" y="56" font-size="15">z</text>
+        <text class="z z3" x="140" y="40" font-size="19">Z</text>
+      </g>
+      <g class="fx fx-think">
+        <circle cx="118" cy="66" r="2.6" fill="#fff" stroke="#D8CFEA"/>
+        <circle cx="126" cy="56" r="3.8" fill="#fff" stroke="#D8CFEA"/>
+        <ellipse cx="144" cy="38" rx="20" ry="13" fill="#fff" stroke="#D8CFEA"/>
+        <circle class="td td1" cx="135" cy="38" r="2.6" fill="#9C7BEA"/>
+        <circle class="td td2" cx="144" cy="38" r="2.6" fill="#9C7BEA"/>
+        <circle class="td td3" cx="153" cy="38" r="2.6" fill="#9C7BEA"/>
+      </g>
+      <g class="fx fx-bang">
+        <text x="46" y="70" font-family="-apple-system, Helvetica, sans-serif" font-size="34" font-weight="900"
+              fill="#FF8A3D" stroke="#fff" stroke-width="3" paint-order="stroke">!</text>
+      </g>
+      <g class="fx fx-sparkle" fill="#FFD23F">
+        <path class="sp sp1" d="M30,70 l3,8 l8,3 l-8,3 l-3,8 l-3,-8 l-8,-3 l8,-3 Z"/>
+        <path class="sp sp2" d="M146,82 l2.4,6 l6,2.4 l-6,2.4 l-2.4,6 l-2.4,-6 l-6,-2.4 l6,-2.4 Z"/>
+        <path class="sp sp3" d="M140,40 l2,5 l5,2 l-5,2 l-2,5 l-2,-5 l-5,-2 l5,-2 Z"/>
+      </g>
+    </svg>
+    <div id="badge"></div>
+  </div>
+</div>
+<script src="pet.js"></script>
+</body>
+</html>

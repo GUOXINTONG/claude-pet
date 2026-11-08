@@ -1,0 +1,244 @@
+html, body {
+  margin: 0; padding: 0; width: 100%; height: 100%;
+  background: transparent; overflow: hidden;
+  user-select: none; -webkit-user-select: none;
+  font-family: -apple-system, "PingFang SC", "Helvetica Neue", sans-serif;
+  --bulb: #FFD36E;
+  --s: .6;
+}
+#stage { position: relative; width: 260px; height: 100vh; }
+
+/* ---------- pet ---------- */
+#pet { position: absolute; left: 45px; bottom: 0; width: 170px; height: 180px; transform: scale(var(--s)); transform-origin: 50% 100%; }
+body.pixel #skin { image-rendering: pixelated; }
+#svg { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+#svg .hit { pointer-events: visiblePainted; cursor: grab; }
+#skin { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; object-position: bottom; display: none; cursor: grab; }
+body.has-skin #skin { display: block; }
+body.has-skin #svg { display: none; }
+
+#shadow { fill: #000; opacity: .16; transform-box: fill-box; transform-origin: center; }
+#bodyg { transform-box: fill-box; transform-origin: 50% 100%; }
+#arm-l { transform-origin: 46px 112px; transition: transform .25s; }
+#arm-r { transform-origin: 124px 112px; transition: transform .25s; }
+#bulb { fill: var(--bulb); transition: fill .3s; }
+#glow { transform-box: fill-box; transform-origin: center; animation: pulse 2.4s ease-in-out infinite; }
+.cheek { fill: #FF8C8C; opacity: .45; }
+#face { transition: transform .4s; }
+
+/* everything situational is hidden unless the state shows it */
+.e, .m, .fx, .brow { display: none; }
+
+/* sleeping */
+[data-state="sleeping"] { --bulb: #8F86B8; }
+[data-state="sleeping"] .e-closed,
+[data-state="sleeping"] .m-sleep,
+[data-state="sleeping"] .fx-zzz { display: inline; }
+[data-state="sleeping"] #bodyg { animation: breathe 5s ease-in-out infinite; }
+[data-state="sleeping"] #glow { animation-duration: 5s; opacity: .4; }
+
+/* idle */
+[data-state="idle"] { --bulb: #FFD36E; }
+[data-state="idle"] .e-normal,
+[data-state="idle"] .m-smile { display: inline; }
+[data-state="idle"] #bodyg { animation: breathe 3.2s ease-in-out infinite; }
+
+/* thinking */
+[data-state="thinking"] { --bulb: #B892FF; }
+[data-state="thinking"] .e-normal,
+[data-state="thinking"] .m-think,
+[data-state="thinking"] .brow-think,
+[data-state="thinking"] .fx-think { display: inline; }
+[data-state="thinking"] #face { transform: translate(3px, -3px); }
+[data-state="thinking"] #bodyg { animation: sway 2.8s ease-in-out infinite; }
+[data-state="thinking"] #arm-r { transform: rotate(48deg); }
+[data-state="thinking"] #glow { animation-duration: 1.2s; }
+
+/* working */
+[data-state="working"] { --bulb: #5BD1FF; }
+[data-state="working"] .e-focus,
+[data-state="working"] .m-flat,
+[data-state="working"] .fx-laptop,
+[data-state="working"] .fx-sweat { display: inline; }
+[data-state="working"] #bodyg { animation: busy .38s ease-in-out infinite alternate; }
+[data-state="working"] #arm-l { animation: type-l .16s ease-in-out infinite alternate; }
+[data-state="working"] #arm-r { animation: type-r .16s ease-in-out infinite alternate .08s; }
+[data-state="working"] #glow { animation-duration: .7s; }
+[data-state="working"] .led { animation: blink-led .5s steps(2) infinite; }
+[data-state="working"] .fx-sweat { animation: sweat 2.2s ease-in infinite; }
+
+/* waiting for you */
+[data-state="waiting"] { --bulb: #FF9F43; }
+[data-state="waiting"] .e-wide,
+[data-state="waiting"] .m-o,
+[data-state="waiting"] .fx-bang { display: inline; }
+[data-state="waiting"] #bodyg { animation: hop 1.5s ease-in-out infinite; }
+[data-state="waiting"] #shadow { animation: shadow-hop 1.5s ease-in-out infinite; }
+[data-state="waiting"] #arm-r { animation: wave .5s ease-in-out infinite alternate; }
+[data-state="waiting"] .fx-bang { animation: bang 1.5s ease-in-out infinite; transform-box: fill-box; transform-origin: 50% 100%; }
+[data-state="waiting"] #glow { animation: pulse .6s ease-in-out infinite; }
+
+/* done */
+[data-state="done"] { --bulb: #7CE38B; }
+[data-state="done"] .e-happy,
+[data-state="done"] .m-open,
+[data-state="done"] .fx-sparkle { display: inline; }
+[data-state="done"] #bodyg { animation: jump 1s cubic-bezier(.3,.7,.4,1) infinite; }
+[data-state="done"] #shadow { animation: shadow-jump 1s cubic-bezier(.3,.7,.4,1) infinite; }
+[data-state="done"] #arm-l { animation: cheer-l .25s ease-in-out infinite alternate; }
+[data-state="done"] #arm-r { animation: cheer-r .25s ease-in-out infinite alternate; }
+[data-state="done"] .sp { transform-box: fill-box; transform-origin: center; animation: twinkle .9s ease-in-out infinite; }
+[data-state="done"] .sp2 { animation-delay: .3s; }
+[data-state="done"] .sp3 { animation-delay: .6s; }
+
+/* error */
+[data-state="error"] { --bulb: #FF5B5B; }
+[data-state="error"] .e-dizzy,
+[data-state="error"] .m-wavy,
+[data-state="error"] .fx-cloud { display: inline; }
+[data-state="error"] #bodyg { animation: shake .45s ease-in-out 3, slump 3s ease-in-out 1.4s infinite; filter: saturate(.55); }
+[data-state="error"] .cloud { animation: float 2.4s ease-in-out infinite; }
+[data-state="error"] .bolt { animation: flash 1.6s steps(1) infinite; }
+[data-state="error"] #arm-l { transform: rotate(-12deg); }
+[data-state="error"] #arm-r { transform: rotate(12deg); }
+
+/* oops (a tool failed, Claude keeps going) */
+[data-state="oops"] { --bulb: #FFB86B; }
+[data-state="oops"] .e-normal,
+[data-state="oops"] .brow-worry,
+[data-state="oops"] .m-wavy,
+[data-state="oops"] .fx-sweat { display: inline; }
+[data-state="oops"] #bodyg { animation: shake .45s ease-in-out 2; }
+
+/* blinking for open eyes */
+.e-normal, .e-focus { transform-box: fill-box; transform-origin: center; animation: blink 4.6s infinite; }
+
+/* ---------- keyframes ---------- */
+@keyframes breathe { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.025,.97); } }
+@keyframes sway { 0%,100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes busy { from { transform: translateY(0) scale(1.012,.988); } to { transform: translateY(-3px) scale(.99,1.01); } }
+@keyframes type-l { from { transform: rotate(-38deg); } to { transform: rotate(-26deg); } }
+@keyframes type-r { from { transform: rotate(38deg); } to { transform: rotate(26deg); } }
+@keyframes hop {
+  0%,45%,100% { transform: translateY(0) scale(1,1); }
+  10% { transform: translateY(0) scale(1.07,.92); }
+  22% { transform: translateY(-16px) scale(.96,1.05); }
+  34% { transform: translateY(0) scale(1.05,.94); }
+}
+@keyframes shadow-hop { 0%,45%,100% { transform: scale(1); } 22% { transform: scale(.7); opacity: .1; } }
+@keyframes wave { from { transform: rotate(-150deg); } to { transform: rotate(-115deg); } }
+@keyframes bang { 0%,100% { transform: scale(1) rotate(-6deg); } 22% { transform: scale(1.25) rotate(6deg); } 50% { opacity: 1; } 75% { opacity: .55; } }
+@keyframes jump {
+  0% { transform: translateY(0) scale(1.08,.9); }
+  15% { transform: translateY(0) scale(.94,1.08); }
+  45% { transform: translateY(-30px) rotate(-5deg); }
+  75% { transform: translateY(0) rotate(0); }
+  85% { transform: translateY(0) scale(1.08,.9); }
+  100% { transform: translateY(0) scale(1,1); }
+}
+@keyframes shadow-jump { 0%,15%,75%,100% { transform: scale(1); } 45% { transform: scale(.6); opacity: .08; } }
+@keyframes cheer-l { from { transform: rotate(125deg); } to { transform: rotate(150deg); } }
+@keyframes cheer-r { from { transform: rotate(-125deg); } to { transform: rotate(-150deg); } }
+@keyframes twinkle { 0%,100% { transform: scale(.4); opacity: .3; } 50% { transform: scale(1.15); opacity: 1; } }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-4px) rotate(-2deg); }
+  40% { transform: translateX(4px) rotate(2deg); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+@keyframes slump { 0%,100% { transform: scale(1.02,.96); } 50% { transform: scale(1.04,.93); } }
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+@keyframes flash { 0%,60%,80%,100% { opacity: 1; } 70%,90% { opacity: 0; } }
+@keyframes pulse { 0%,100% { transform: scale(.85); opacity: .55; } 50% { transform: scale(1.2); opacity: 1; } }
+@keyframes blink { 0%,94%,100% { transform: scaleY(1); } 96%,97% { transform: scaleY(.08); } }
+@keyframes blink-led { 0% { opacity: 1; } 50% { opacity: .25; } }
+@keyframes sweat { 0%,40% { transform: translateY(0); opacity: 0; } 50% { opacity: 1; } 100% { transform: translateY(14px); opacity: 0; } }
+
+.fx-zzz .z { opacity: 0; animation: zfloat 3.6s ease-in-out infinite; }
+.fx-zzz .z2 { animation-delay: 1.2s; }
+.fx-zzz .z3 { animation-delay: 2.4s; }
+@keyframes zfloat { 0% { opacity: 0; transform: translate(0,6px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(8px,-10px); } }
+.td { animation: dot 1.2s ease-in-out infinite; }
+.td2 { animation-delay: .2s; }
+.td3 { animation-delay: .4s; }
+@keyframes dot { 0%,60%,100% { opacity: .25; } 30% { opacity: 1; } }
+
+/* ---------- speech bubble ---------- */
+#bubble {
+  position: absolute; left: 50%; bottom: calc(var(--s) * 162px + 4px);
+  transform: translate(-50%, 6px); opacity: 0;
+  transition: opacity .2s, transform .2s;
+  max-width: 236px; box-sizing: border-box;
+  background: rgba(255,255,255,.97); color: #3A2A24;
+  border: 1.5px solid rgba(0,0,0,.06);
+  border-radius: 13px; padding: 6px 12px;
+  font-size: 12.5px; font-weight: 600; line-height: 1.4;
+  box-shadow: 0 3px 12px rgba(0,0,0,.18);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  pointer-events: none;
+}
+#bubble.show { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+#bubble.waiting { background: #FFF5EA; border-color: #FF9F43; }
+#bubble.done { background: #EFFBF0; border-color: #7CE38B; }
+#bubble.error, #bubble.oops { background: #FFF0F0; border-color: #FF8B8B; }
+#bubble.working { border-color: #9EE3FF; }
+#bubble.thinking { border-color: #D8C6FF; }
+#bubble.list { white-space: normal; font-weight: 500; padding: 7px 11px; min-width: 150px; }
+#bubble.list .title { font-weight: 700; margin-bottom: 3px; color: #8A6A5E; font-size: 11px; }
+.row { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.row b { font-weight: 650; max-width: 100px; overflow: hidden; text-overflow: ellipsis; }
+.row span { color: #8A6A5E; overflow: hidden; text-overflow: ellipsis; }
+.dot { width: 7px; height: 7px; border-radius: 50%; flex: none; background: #CFC6C2; }
+.dot.waiting { background: #FF9F43; } .dot.working { background: #5BD1FF; } .dot.thinking { background: #B892FF; }
+.dot.done { background: #7CE38B; } .dot.error, .dot.oops { background: #FF5B5B; }
+
+/* ---------- badge (number of busy sessions) ---------- */
+#badge {
+  position: absolute; right: 20px; top: 60px;
+  transform: scale(calc(1 / var(--s))); transform-origin: 100% 0;
+  min-width: 18px; height: 18px; padding: 0 5px; box-sizing: border-box;
+  border-radius: 9px; background: #3A2A24; color: #fff;
+  font-size: 11px; font-weight: 700; line-height: 18px; text-align: center;
+  display: none; pointer-events: none;
+}
+#badge.show { display: block; }
+
+/* ---------- confetti ---------- */
+#confetti { position: absolute; left: 130px; bottom: calc(var(--s) * 120px); width: 0; height: 0; pointer-events: none; }
+#confetti i {
+  position: absolute; width: 6px; height: 9px; border-radius: 1.5px; background: var(--c);
+  animation: confetti 1.5s cubic-bezier(.15,.6,.35,1) forwards; animation-delay: var(--d);
+  opacity: 0;
+}
+@keyframes confetti {
+  0% { transform: translate(0,0) rotate(0); opacity: 1; }
+  55% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 1; }
+  100% { transform: translate(calc(var(--dx) * 1.15), calc(var(--dy) + 70px)) rotate(calc(var(--r) * 2)); opacity: 0; }
+}
+
+/* ---------- custom skin: animate any user image by state ---------- */
+#skin { transform-origin: 50% 60%; transition: filter .3s, opacity .3s; }
+body.has-skin[data-state="sleeping"] #skin { animation: s-breathe 5s ease-in-out infinite; opacity: .7; filter: grayscale(.4); }
+body.has-skin[data-state="idle"] #skin { animation: s-breathe 3.2s ease-in-out infinite; }
+body.has-skin[data-state="thinking"] #skin { animation: s-sway 2.6s ease-in-out infinite; }
+body.has-skin[data-state="working"] #skin { animation: s-busy .32s ease-in-out infinite alternate; filter: drop-shadow(0 0 8px rgba(91,209,255,.8)); }
+body.has-skin[data-state="waiting"] #skin { animation: s-hop 1.4s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(255,159,67,.85)); }
+body.has-skin[data-state="done"] #skin { animation: s-jump 1s cubic-bezier(.3,.7,.4,1) infinite; filter: drop-shadow(0 0 10px rgba(124,227,139,.9)); }
+body.has-skin[data-state="error"] #skin { animation: shake .45s ease-in-out 3; filter: grayscale(.6) drop-shadow(0 0 8px rgba(255,91,91,.9)); }
+body.has-skin[data-state="oops"] #skin { animation: shake .45s ease-in-out 2; }
+@keyframes s-breathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.04, .96); } }
+@keyframes s-sway { 0%,100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+@keyframes s-busy { from { transform: translateY(0) rotate(-3deg) scale(1.02,.98); } to { transform: translateY(-5px) rotate(3deg) scale(.98,1.02); } }
+@keyframes s-hop {
+  0%,45%,100% { transform: translateY(0) scale(1); }
+  10% { transform: translateY(0) scale(1.08,.9); }
+  22% { transform: translateY(-16px) scale(.95,1.06) rotate(-6deg); }
+  34% { transform: translateY(0) scale(1.05,.94); }
+}
+@keyframes s-jump {
+  0% { transform: translateY(0) scale(1.08,.9); }
+  45% { transform: translateY(-28px) rotate(180deg); }
+  75% { transform: translateY(0) rotate(360deg); }
+  100% { transform: translateY(0) rotate(360deg); }
+}
