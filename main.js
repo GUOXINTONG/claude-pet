@@ -75,8 +75,10 @@ function stateOf(s, age) {
       return age > 600 ? 'idle' : 'thinking';
     case 'PreToolUse':
     case 'SubagentStart':
-    case 'PreCompact':
       return age > 1800 ? 'idle' : 'working';
+    case 'PreCompact':
+      // Compaction has no reliable "finished" event, so don't stay stuck on it.
+      return age > 180 ? 'idle' : 'working';
     case 'PostToolUseFailure':
       return age < 3 ? 'oops' : age > 600 ? 'idle' : 'thinking';
     case 'PermissionRequest':
